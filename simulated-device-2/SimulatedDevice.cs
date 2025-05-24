@@ -19,9 +19,10 @@ namespace simulated_device
         // The device connection string to authenticate the device with your IoT hub.
         // Using the Azure CLI:
         // az iot hub device-identity connection-string show --hub-name {YourIoTHubName} --device-id MyDotnetDevice --output table
+        // az iot hub device-identity connection-string show --hub-name {YourIoTHubName} --device-id MyDotnetDevice --output table
         private readonly static string s_connectionString = "{Your device connection string here}";
-
-        private static int s_telemetryInterval = 1; // Seconds
+    
+        private static int s_telemetryInterval = 10; // Seconds
 
         // Handle the direct method call
         private static Task<MethodResponse> SetTelemetryInterval(MethodRequest methodRequest, object userContext)
@@ -59,12 +60,20 @@ namespace simulated_device
             {
                 double currentTemperature = minTemperature + rand.NextDouble() * 15;
                 double currentHumidity = minHumidity + rand.NextDouble() * 20;
+                string[] devices = { "Device1", "Device2", "Device3", "Device4", "Device5" };
+                int randomDeviceIndex = rand.Next(0, devices.Length);
+                string randomDevice = devices[randomDeviceIndex];
+                string[] locations = { "Room1", "Room2", "Room3", "Room4", "Room5" };
+                int randomLocationIndex = rand.Next(0, locations.Length);
+                string randomLocation = locations[randomLocationIndex];
 
                 // Create JSON message
                 var telemetryDataPoint = new
                 {
+                    deviceId = randomDevice,
                     temperature = currentTemperature,
-                    humidity = currentHumidity
+                    humidity = currentHumidity,
+                    location = randomLocation
                 };
                 var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
                 var message = new Message(Encoding.ASCII.GetBytes(messageString));
